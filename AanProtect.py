@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
 
-import LINETCR
-from LINETCR.lib.curve.ttypes import *
+import Aan
+from Aan.lib.curve.ttypes import *
 from datetime import datetime
-import time,random,sys,json,codecs,threading,glob,re,os,subprocess
+from bs4 import BeautifulSoup
+import time, random, sys, re, os, json, subprocess, threading, string, codecs, requests, tweepy, ctypes, urllib, urllib2, wikipedia,tempfile,glob,shutil,unicodedata,goslate
+from gtts import gTTS
 
-cl = LINETCR.LINE() #Luffy
-cl.login(qr=True)
+cl = Aan.LINE() #Luffy
+cl.login(token="EnUYyqCSPtwR69uQNPub.sDTrH/zMSMOdJJyRwe3qQW.drdrZUcuAd/AT0msL9LodnP8sfvMblrwBtb7e3oDBVw=")
 cl.loginResult()
 
-ki = LINETCR.LINE() #Zorro
-ki.login(token="EmhjJVAvykY9A6bTcqk1.UlrDCGkj7dxSpRrrWVSpKq.g8El2o83SJjToC/B3mtE4Hfy+ZhUyfM1v05Nihe1uS0=")
+ki = Aan.LINE() #Zorro
+ki.login(token="EnGnnBKgqMaNaRVLejk1.UlrDCGkj7dxSpRrrWVSpKq.l0NrndGfFLHz3MrEEE2iWVv3kqONPsI3BdGFgmE6hyA=")
 ki.loginResult()
 
-kk = LINETCR.LINE() #Sanji
-kk.login(token="EmoxGhaKWz50NKypfpI5.T2Obu6kd2POuq9/WqXGtnq.PwgUhIT86WPBn0C+l/W6CiM2JMTMnWT2jwkAUE4Sw0A=")
+kk = Aan.LINE() #Sanji
+kk.login(token="EnZgGjZqBaw8sVRBHbRe.uHwIvq3v1iyKQZqnNrhKFG.clRy8nlbIQhxuMTZGY9e4nIB/Nb9GBmKNekBf2aTyZI=")
 kk.loginResult()
 
-kc = LINETCR.LINE() #Ussop
-kc.login(token="EmqIp4XTrNr5Nk6uTUz0.OOrZbj8EyTSVjVw5TMWwGa.FEaiCtcMq+O0gdjv3HWzkGZAvGm+cD0pXBR7uWjW31I=")
+kc = Aan.LINE() #Ussop
+kc.login(token="EngoffDSv6Domioqo6Md.AaRklDERafMmmw4gJp8JRq.273iqdHQ1E9BNLu6vST408CNW4nlD2vVRHVuPn7s1rg=")
 kc.loginResult()
 
-ks = LINETCR.LINE() #Chooper
-ks.login(token="EmcVbrrmTNlbtBu6VZAe.7oUShdLcs9TUvO5sMkXNpG.W6MpRLwzTW2LaTysFKCtvqg1p6YpZviBVu4aMnkGAn0=")
+ks = Aan.LINE() #Chooper
+ks.login(token="EnGo78f652fwu8gcXHa5.T2Obu6kd2POuq9/WqXGtnq.UYTg+cfay9+8puESkz3CzK0KEHIB3f6K2Qb3ztSRR8c=")
 ks.loginResult()
 
 print "login success plak"
@@ -37,6 +39,7 @@ helpMessage ="""
 ||-Admin add @ >>> Tambahkan admin
 ||-Admin remove @ >>> Hapus admin
 ||-Adminlist >>> Daftar admin
+||-All rename:>>> ganti smeua nama bot
 ||-Allbio: >>> Ganti All Bio Bot
 ||-Myname: >>> Bot induk ganti nama
 ||-Myname1: >>> Bot 2 ubah nama
@@ -48,12 +51,26 @@ helpMessage ="""
 ||-Bc >>> Bc kesemua grup yg dijoinin
 ||-LG2 >>> Untuk invitemeto:
 ||-Bot out >>> Bot keluar dari semua grup yg dijoinin
+||-bot restart >>> restart bot
 
 ==============================
 || [Read Point]                       
 ||-Cctv                               
 ||-Ciduk                              
 ==============================
+
+★ STEALING ★
+● Steal name    @[name]
+● Steal Bio     @[name]
+● Steal status  @[name]
+● Steal mid     @[name]
+● Steal contact @[name]
+● Steal cover   @[name]
+● Steal pict    @[name]
+● Steal group pict
+● Midpict:[mid]
+● Copy @[name]
+● Kembali ke asli
 
 ==============================
 || ****Admin Menu****                 
@@ -119,6 +136,34 @@ helpMessage ="""
 ||-Bot Add @ >>> Bot add
 ||-Help >>> Comand Bot
 ||-Kalender >>> Kalebder sekarang
+||-wiki>>> Wiki search
+Bot restart
+
+★ CHAT RELATED ★
+● Lyric [][]
+● Music [][]
+● Wiki [text]
+● Vidio [text]
+● Youtube [text]
+● Instagram [text]
+● Translate-idn [text]
+● Translate-eng [text]
+● Translate-thai [text]
+● Translate-japan [text]
+● Emoji [expression]
+● Info @[name]
+● Ping
+● Time
+● apakah
+  [kerang ajaib]
+● Sticker [expression]
+● Mention all
+● /say
+● /say-en
+● /say-jp
+● Dosa @
+● /
+● Siapa
 
 =============================
          Boruto  BOT
@@ -167,26 +212,24 @@ wait = {
     'leaveRoom':True,
     'timeline':True,
     'autoAdd':True,
-    'message':"""тerima Kasih Sudah Menambahkan Aku Jadi Teman
-≫ Aku Ga Jawab PM Karna aq Cuma Bot Protect ≪
-≫ BORUTO BOT PROTECT ≪
+    'message':"""*Ready Sewa Bot Protect*
 
-Ready:
+Keuntungan:
+∆••••••Protect Kayak Siri
+∆••••••Level admin
+∆••••••Bot bisa dibawa kemana saja
+∆••••••Durasi 30 hari
 
-≫ bot protect ≪
-≫ SelfBot ≪
+Open Pembuatan Bot •••••••Self Bot•••••
+•••••Bot Protect•••••
+••••• Bot Kicker•••••
+•••••Bot Likes••••••
 
+Minat/tanya" Pc: Aan jutawan 
+https://line.me/R/ti/p/%40iyv1920f
 
-ṡȗƿƿȏяṭєԀ ɞʏ:
-  
-☆ BORUTO BOT PROTECT ☆
-☆ MOVIE VVIP ☆
-☆ FOUNDER COMMUNITY ☆
-☆ Generasi POLICE Killers ☆
-
-
-Minat? Silahkan PM!
-Idline: http://line.me/ti/p/~alrahmantoganteng""",
+sᴜᴘᴘᴏʀᴛᴇᴅ ʙʏ:
+Ȧ͉̻͙͈̩̖͉͚̖ͨ̔͂̅͘͞͏͞a̞̞̲͉͍̥̼̠͎̿̎ͯͫ̍̋͑̅̿͏̵̵̸̡̨͘͞͠͝n̷̶̦͍̗͚͚͉̋ͭ̓̌̎̈́́͠ ̢͎̩̮͍̭́̊̃̅̀̕̕͢͟͜J̸ͨ́ű̼̣͓͂̃̈͗̉̽ͧ͊ͅ҉̸̵̡̢̨̡̀͟ţ̮͈̜̣̰̘ͩͫ͌̃́̀̕̕͜͡͡ͅa̵͔͔̾̔̋ͦ̎̀w̡͖̘ͭ͊̿̍́͘ͅą̧̧̠̰̹̎̆̐͂̏̋̎̃̾͜n̛͟",
     "lang":"JP",
     "comment":"Thanks for add me",
     "commentOn":False,
@@ -215,10 +258,51 @@ wait2 = {
     'setTime':{},
     'ROM':{}
     }
+    
+ wait3 = {
+    "copy":False,
+    "copy2":"target",
+    "target":{}
+    }
+    
+  res = {
+    'num':{},
+    'us':{},
+    'au':{},
+}
 
-setTime = {}
-setTime = wait2['setTime']
+  setTime = {}
+  setTime = wait2['setTime']
 
+contact = cl.getProfile()
+backup = cl.getProfile()
+backup.displayName = contact.displayName
+backup.statusMessage = contact.statusMessage
+backup.pictureStatus = contact.pictureStatus
+
+contact = ki.getProfile()
+backup = ki.getProfile()
+backup.displayName = contact.displayName
+backup.statusMessage = contact.statusMessage
+backup.pictureStatus = contact.pictureStatus
+
+contact = kk.getProfile()
+backup = kk.getProfile()
+backup.displayName = contact.displayName
+backup.statusMessage = contact.statusMessage
+backup.pictureStatus = contact.pictureStatus
+
+contact = kc.getProfile()
+backup = kc.getProfile()
+backup.displayName = contact.displayName
+backup.statusMessage = contact.statusMessage
+backup.pictureStatus = contact.pictureStatus
+
+contact = ks.getProfile()
+backup = ks.getProfile()
+backup.displayName = contact.displayName
+backup.statusMessage = contact.statusMessage
+backup.pictureStatus = contact.pictureStatus
 
 def sendMessage(to, text, contentMetadata={}, contentType=0):
     mes = Message()
@@ -777,6 +861,111 @@ def bot(op):
                                     clSendText(msg.to, "Success Copy profile ~")
                                 except Exception as e:
                                     print e
+            elif "All rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("All rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = cl.getProfile()
+                    profile.displayName = string
+                    cl.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 20:
+                    profile = ki.getProfile()
+                    profile.displayName = string
+                    ki.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kc.getProfile()
+                    profile.displayName = string
+                    kc.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kk.getProfile()
+                    profile.displayName = string
+                    kk.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 20:
+                    profile = ks.getProfile()
+                    profile.displayName = string
+                    ks.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kt.getProfile()
+                    profile.displayName = string
+                    kt.updateProfile(profile)
+                    cl.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif msg.text.lower() == 'allbio:':
+              if msg.from_ in owner:
+                string = msg.text.lower().replace("allbio:","")
+                if len(string.decode('utf-8')) <= 500:
+                    profile = ki.getProfile()
+                    profile.statusMessage = string
+                    ki.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 500:
+                    profile = kk.getProfile()
+                    profile.statusMessage = string
+                    kk.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 500:
+                    profile = kc.getProfile()
+                    profile.statusMessage = string
+                    kc.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 500:
+                    profile = cl.getProfile()
+                    profile.statusMessage = string
+                    cl.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 500:
+                    profile = ks.getProfile()
+                    profile.statusMessage = string
+                    ks.updateProfile(profile)
+                if len(string.decode('utf-8')) <= 500:
+                    profile = kt.getProfile()
+                    profile.statusMessage = string
+                    kt.updateProfile(profile)
+                    cl.sendText(msg.to,"successfully turn it into: " + string + "")
+            elif "Bot1 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot1 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = cl.getProfile()
+                    profile.displayName = string
+                    cl.updateProfile(profile)
+                    cl.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif "Bot2 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot2 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = ki.getProfile()
+                    profile.displayName = string
+                    ki.updateProfile(profile)
+                    ki.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif "Bot3 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot3 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kc.getProfile()
+                    profile.displayName = string
+                    kc.updateProfile(profile)
+                    kc.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif "Bot4 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot4 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kk.getProfile()
+                    profile.displayName = string
+                    kk.updateProfile(profile)
+                    kk.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif "Bot5 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot5 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = ks.getProfile()
+                    profile.displayName = string
+                    ks.updateProfile(profile)
+                    ks.sendText(msg.to,"change name: "+string+"\nsucces")
+            elif "Bot6 rename:" in msg.text:
+              if msg.from_ in owner:
+                string = msg.text.replace("Bot6 rename:","")
+                if len(string.decode('utf-8')) <= 20:
+                    profile = kt.getProfile()
+                    profile.displayName = string
+                    kt.updateProfile(profile)
+                    kt.sendText(msg.to,"change name: "+string+"\nsucces")    
+
             elif "Berapa besar cinta " in msg.text:
                 tanya =  msg.text.replace("Berapa besar cinta","")
                 jawab = ("10%","20%","30%","40%","50%","60%","70%","80%","90%","100%")
@@ -819,6 +1008,16 @@ def bot(op):
                         cl.sendText(msg.to,"All invitations have been rejected")
                     else:
                         cl.sendText(msg.to,"Done")
+            elif msg.text.lower() == 'bot restart':
+              if msg.from_ in admin:
+                    print "[Command]Like executed"
+                    try:
+                        cl.sendText(msg.to,"Restarting...")
+                        restart_program()
+                    except:
+                        cl.sendText(msg.to,"Please wait")
+                        restart_program()
+                        pass
             elif "Spamcontact @" in msg.text:
                 _name = msg.text.replace("Spamcontact @","")
                 _nametarget = _name.rstrip(' ')
@@ -898,9 +1097,202 @@ def bot(op):
                                         break
                     else:
                         cl.sendText(msg.to,"Tidak bisa dilakukan di luar wilayah")
+            elif "Steal bio" in msg.text:
+              if msg.from_ in admin:
+                key = eval(msg.contentMetadata["MENTION"])
+                key1 = key["MENTIONEES"][0]["M"]
+                contact = cl.getContact(key1)
+                cu = cl.channel.getCover(key1)
+                try:
+                    cl.sendText(msg.to,contact.statusMessage)
+                except:
+                    cl.sendText(msg.to,contact.statusMessage)
+            elif "Steal mid" in msg.text:
+              if msg.from_ in admin:
+                key = eval(msg.contentMetadata["MENTION"])
+                key1 = key["MENTIONEES"][0]["M"]
+                cl.sendText(msg.to,"Mc: " + key1)
+            elif "Steal contact" in msg.text:
+              if msg.from_ in admin:
+                key = eval(msg.contentMetadata["MENTION"])
+                key1 = key["MENTIONEES"][0]["M"]                
+                mmid = cl.getContact(key1)
+                msg.contentType = 13
+                msg.contentMetadata = {"mid": key1}
+                cl.sendMessage(msg)
+            elif "Mc:" in msg.text:
+              if msg.from_ in admin:
+                mmid = msg.text.replace("Mc:","")
+                msg.contentType = 13
+                msg.contentMetadata = {"mid":mmid}
+                cl.sendMessage(msg)
+            
 #-----------------------------------------------
             #----------------------------------
-            elif msg.text in ["Kernel","kernel"]:
+            elif msg.text in ["Welcome message:on"]:
+              if msg.from_ in admin:
+                if wait["welcomemsg"] == True:
+                    if wait["lang"] == "JP":
+                        cl.sendText(msg.to,"welcome message on\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                    else:
+                        cl.sendText(msg.to,"welcome message on\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                else:
+                    wait["welcomemsg"] = True
+                    if wait["lang"] == "JP":
+                        cl.sendText(msg.to,"welcome message on\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                    else:
+                        cl.sendText(msg.to,"welcome message on")
+         
+	    elif msg.text in ["Welcome message:off"]:
+              if msg.from_ in admin:
+                if wait["welcomemsg"] == False:
+                    if wait["lang"] == "JP":
+                        cl.sendText(msg.to,"welcome message off\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                    else:
+                        cl.sendText(msg.to,"welcome message off\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                else:
+                    wait["welcomemsg"] = False
+                    if wait["lang"] == "JP":
+                        cl.sendText(msg.to,"welcome message off\n\n"+ datetime.today().strftime('%H:%M:%S'))
+                    else:
+                        cl.sendText(msg.to,"welcome message off\n\n"+ datetime.today().strftime('%H:%M:%S'))
+            elif "Update welcome:" in msg.text:
+              if msg.from_ in admin:
+                wait["welmsg"] = msg.text.replace("Update welcome:","")
+                cl.sendText(msg.to,"update welcome message succes"+ datetime.today().strftime('%H:%M:%S'))
+            elif msg.text in ["Check welcome message"]:
+              if msg.from_ in admin:
+                if wait["lang"] == "JP":
+                    cl.sendText(msg.to,"yor bot message\n\n" + wait["welmsg"])
+                else:
+                    cl.sendText(msg.to,"The automatic appending information is set as follows。\n\n" + wait["welmsg"])
+            elif msg.text.lower() == 'responsename':
+              if msg.from_ in admin:
+                profile = cl.getProfile()
+                text = profile.displayName + ""
+                cl.sendText(msg.to, text)
+                profile = ki.getProfile()
+                text = profile.displayName + ""
+                ki.sendText(msg.to, text)
+                profile = kk.getProfile()
+                text = profile.displayName + ""
+                kk.sendText(msg.to, text)
+                profile = kc.getProfile()
+                text = profile.displayName + ""
+                kc.sendText(msg.to, text)
+                profile = ks.getProfile()
+                text = profile.displayName + ""
+                ks.sendText(msg.to, text)
+            elif "Steal cover @" in msg.text:
+              if msg.from_ in admin:            
+                print "[Command]dp executing"
+                _name = msg.text.replace("Steal cover @","")
+                _nametarget = _name.rstrip('  ')
+                gs = cl.getGroup(msg.to)
+                targets = []
+                for g in gs.members:
+                    if _nametarget == g.displayName:
+                        targets.append(g.mid)
+                if targets == []:
+                    cl.sendText(msg.to,"Contact not found")
+                else:
+                    for target in targets:
+                        try:
+                            contact = cl.getContact(target)
+                            cu = cl.channel.getCover(target)
+                            path = str(cu)
+                            cl.sendImageWithURL(msg.to, path)
+                        except:
+                            pass
+                print "[Command]dp executed"
+            elif "Midpict:" in msg.text:
+              if msg.from_ in admin:
+                umid = msg.text.replace("Midpict:","")
+                contact = cl.getContact(umid)
+                try:
+                    image = "http://dl.profile.line-cdn.net/" + contact.pictureStatus
+                except:
+                    image = "https://www.1and1.co.uk/digitalguide/fileadmin/DigitalGuide/Teaser/not-found-t.jpg"
+                try:
+                    cl.sendImageWithURL(msg.to,image)
+                except Exception as error:
+                    cl.sendText(msg.to,(error))
+                    pass
+            elif "Steal pict " in msg.text:
+              if msg.from_ in admin:
+                if msg.toType == 2:
+                    msg.contentType = 0
+                    steal0 = msg.text.replace("Steal pict ","")
+                    steal1 = steal0.lstrip()
+                    steal2 = steal1.replace("@","")
+                    steal3 = steal2.rstrip()
+                    _name = steal3
+                    group = cl.getGroup(msg.to)
+                    targets = []
+                    for g in group.members:
+                        if _name == g.displayName:
+                            targets.append(g.mid)
+                    if targets == []:
+                        cl.sendText(msg.to,"not found")
+                    else:
+                        for target in targets:
+                            try:
+                                contact = cl.getContact(target)
+                                try:
+                                    image = "http://dl.profile.line-cdn.net/" + contact.pictureStatus
+                                except:
+                                    image = "https://www.1and1.co.uk/digitalguide/fileadmin/DigitalGuide/Teaser/not-found-t.jpg"
+                                try:
+                                    cl.sendImageWithURL(msg.to,image)
+                                except Exception as error:
+                                    cl.sendText(msg.to,(error))
+                                    pass
+                            except:
+                                cl.sendText(msg.to,"Error!")
+                                break
+                else:
+                    cl.sendText(msg.to,"Tidak bisa dilakukan di luar grup")
+            elif "Copy @" in msg.text:
+                if msg.toType == 2:
+                    if msg.from_ in admin:
+                        print "[COPY] Ok"
+                        _name = msg.text.replace("Copy @","")
+                        _nametarget = _name.rstrip('  ')
+                        gs = cl.getGroup(msg.to)
+                        targets = []
+                        for g in gs.members:
+                            if _nametarget == g.displayName:
+                                targets.append(g.mid)
+                        if targets == []:
+                            cl.sendText(msg.to, "Tidak Ada Target Copy")
+                        else:
+                            for target in targets:
+                                try:
+                                    cl.CloneContactProfile(target)
+                                    ki.CloneContactProfile(target)
+                                    kk.CloneContactProfile(target)
+                                    kc.CloneContactProfile(target)
+                                    ks.CloneContactProfile(target)
+                                    cl.sendText(msg.to, "Sukses Copy Profile")
+                                except Exception as e:
+                                    print e
+            elif msg.text in ["Kembali ke asli"]:
+                try:
+                    cl.updateDisplayPicture(backup.pictureStatus)
+                    cl.updateProfile(backup)
+                    ki.updateDisplayPicture(backup.pictureStatus)
+                    ki.updateProfile(backup)
+                    kk.updateDisplayPicture(backup.pictureStatus)
+                    kk.updateProfile(backup)
+                    kc.updateDisplayPicture(backup.pictureStatus)
+                    kc.updateProfile(backup)
+                    ks.updateDisplayPicture(backup.pictureStatus)
+                    ks.updateProfile(backup)
+                    cl.sendText(msg.to, "Backup Astro Sukses")
+                except Exception as e:
+                    cl.sendText(msg.to, str (e))
+
+	    elif msg.text in ["Kernel","kernel"]:
                  if msg.from_ in admin:
                      botKernel = subprocess.Popen(["uname","-svmo"], stdout=subprocess.PIPE).communicate()[0]
                      cl.sendText(msg.to, botKernel)
@@ -908,7 +1300,63 @@ def bot(op):
                  else:
                      cl.sendText(msg.to,"Command denied.")
                      cl.sendText(msg.to,"Admin permission required.")
-                     print "[Error]Command denied - Admin permission required"
+                     print "[Error]Command denied - Admin permission required"elif msg.text.lower() == 'ifconfig':
+              if msg.from_ in admin:
+                    botKernel = subprocess.Popen(["ifconfig"], stdout=subprocess.PIPE).communicate()[0]
+                    cl.sendText(msg.to, botKernel + "\n\n===SERVER INFO NetStat===")
+            elif msg.text.lower() == 'system':
+              if msg.from_ in admin:
+                    botKernel = subprocess.Popen(["df","-h"], stdout=subprocess.PIPE).communicate()[0]
+                    cl.sendText(msg.to, botKernel + "\n\n===SERVER INFO SYSTEM===")
+            elif msg.text.lower() == 'kernel':
+              if msg.from_ in admin:
+                    botKernel = subprocess.Popen(["uname","-srvmpio"], stdout=subprocess.PIPE).communicate()[0]
+                    cl.sendText(msg.to, botKernel + "\n\n===SERVER INFO KERNEL===")
+            elif msg.text.lower() == 'cpu':
+              if msg.from_ in admin:
+                    botKernel = subprocess.Popen(["cat","/proc/cpuinfo"], stdout=subprocess.PIPE).communicate()[0]
+                    cl.sendText(msg.to, botKernel + "\n\n===SERVER INFO CPU===")
+            elif 'instagram ' in msg.text.lower():
+              if msg.from_ in admin:
+                try:
+                    instagram = msg.text.lower().replace("instagram ","")
+                    html = requests.get('https://www.instagram.com/' + instagram + '/?')
+                    soup = BeautifulSoup(html.text, 'html5lib')
+                    data = soup.find_all('meta', attrs={'property':'og:description'})
+                    text = data[0].get('content').split()
+                    data1 = soup.find_all('meta', attrs={'property':'og:image'})
+                    text1 = data1[0].get('content').split()
+                    user = "Name: " + text[-2] + "\n"
+                    user1 = "Username: " + text[-1] + "\n"
+                    followers = "Followers: " + text[0] + "\n"
+                    following = "Following: " + text[2] + "\n"
+                    post = "Post: " + text[4] + "\n"
+                    link = "Link: " + "https://www.instagram.com/" + instagram
+                    detail = "======INSTAGRAM INFO USER======\n"
+                    details = "\n======INSTAGRAM INFO USER======"
+                    cl.sendText(msg.to, detail + user + user1 + followers + following + post + link + details)
+                    cl.sendImageWithURL(msg.to, text1[0])
+                except Exception as njer:
+                	cl.sendText(msg.to, str(njer))
+            elif 'music ' in msg.text.lower():
+              if msg.from_ in admin:
+                try:
+                    songname = msg.text.lower().replace('music ','')
+                    params = {'songname': songname}
+                    r = requests.get('http://ide.fdlrcn.com/workspace/yumi-apis/joox?' + urllib.urlencode(params))
+                    data = r.text
+                    data = json.loads(data)
+                    for song in data:
+                        hasil = 'This is Your Music\n'
+                        hasil += 'Judul : ' + song[0]
+                        hasil += '\nDurasi : ' + song[1]
+                        hasil += '\nLink Download : ' + song[4]
+                        cl.sendText(msg.to, hasil)
+                        cl.sendText(msg.to, "Please Wait for audio...")
+                        cl.sendAudioWithURL(msg.to, song[3])
+		except Exception as njer:
+		        cl.sendText(msg.to, str(njer))
+         
 #-----------------------------------------------
             elif "Gcreator" == msg.text:
                 try:
@@ -938,6 +1386,26 @@ def bot(op):
                  except:
                     pass
                 #pke tag
+            elif 'wiki ' in msg.text.lower():
+              if msg.toType ==2:
+                  try:
+                      wiki = msg.text.lower().replace("wiki ","")
+                      wikipedia.set_lang("id")
+                      pesan="Title ("
+                      pesan+=wikipedia.page(wiki).title
+                      pesan+=")\n\n"
+                      pesan+=wikipedia.summary(wiki, sentences=1)
+                      pesan+="\n"
+                      pesan+=wikipedia.page(wiki).url
+                      cl.sendText(msg.to, pesan)
+                  except:
+                          try:
+                              pesan="Over Text Limit! Please Click link\n"
+                              pesan+=wikipedia.page(wiki).url
+                              cl.sendText(msg.to, pesan)
+                          except Exception as e:
+                              cl.sendText(msg.to, str(e))
+           
             elif "Info @" in msg.text:
                 nama = msg.text.replace("Info @","")
                 target = nama.rstrip(' ')
